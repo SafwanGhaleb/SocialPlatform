@@ -12,7 +12,7 @@ app = FastAPI()
 
 # Ensure tables are created (optional in production)
 
+app.include_router(auth.router)  
 app.include_router(friend_requests.router)
-app.include_router(auth.router)  # <-- include auth routes
 
 create_tables()
