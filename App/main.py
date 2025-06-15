@@ -1,7 +1,7 @@
 from fastapi import  FastAPI
-from Instagram.router import friend_requests
-from Instagram.router import auth
-from Instagram.database import create_tables
+from App.router import friend_requests
+from App.router import auth
+from App.db.database import create_tables
 
 
 import sys

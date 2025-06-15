@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from Instagram.database import get_db
-from Instagram.models import User
-from Instagram.schemas import UserCreate, UserLogin
-from Instagram.security import hash_password, verify_password
-from Instagram.schemas import UserResponse
-from Instagram.schemas import UserUpdate
+from App.db.database import get_db
+from App.models.user_models import User
+from App.schemas.user_schemas import UserCreate, UserLogin
+from App.core.security import hash_password, verify_password
+from App.schemas.user_schemas import UserResponse
+from App.schemas.user_schemas import UserUpdate
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])

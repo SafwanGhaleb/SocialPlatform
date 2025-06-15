@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from Instagram.database import get_db
-from Instagram.models import FriendRequest, FriendRequestStatus
-from Instagram.schemas import FriendRequestUpdate, FriendRequestCreate, FriendRequestAction
+from App.db.database import get_db
+from App.models.user_models import FriendRequest, FriendRequestStatus
+from App.schemas.user_schemas import FriendRequestUpdate, FriendRequestCreate, FriendRequestAction
 
 router = APIRouter(prefix="/friendrequests", tags=["friendrequests"])
 

@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey, Enum as SQLAEnum, UniqueConstraint
 from sqlalchemy.orm import relationship
-from Instagram.database import Base
+from App.db.database import Base
 import enum
 from sqlalchemy import Column, Integer, String
 
