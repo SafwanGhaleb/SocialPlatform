@@ -2,7 +2,6 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 
 
-# Define enum FIRST
 class FriendRequestAction(str, Enum):
     accept = "accept"
     reject = "reject"

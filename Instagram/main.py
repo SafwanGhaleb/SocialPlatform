@@ -10,9 +10,13 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 app = FastAPI()
 
+<<<<<<< HEAD
 # Ensure tables are created (optional in production)
 
 app.include_router(auth.router)  
+=======
+app.include_router(auth.router)
+>>>>>>> c0fbaec (Initial commit)
 app.include_router(friend_requests.router)
 
 create_tables()

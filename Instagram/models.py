@@ -4,14 +4,14 @@ from Instagram.database import Base
 import enum
 from sqlalchemy import Column, Integer, String
 
-# ✅ Enum for request status
+#  Enum for request status
 class FriendRequestStatus(str, enum.Enum):
     pending  = "pending"
     accepted = "accepted"
     rejected = "rejected"
     revoked  =  "revoked"
 
-# ✅ User table
+#  User table
 
 class User(Base):
     __tablename__ = 'users'
@@ -20,7 +20,7 @@ class User(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
 
-# ✅ Friend request table
+#  Friend request table
 class FriendRequest(Base):
     __tablename__ = 'friend_requests'
     __table_args__ = (UniqueConstraint('sender_id', 'receiver_id', name='unique_friend_request'),)

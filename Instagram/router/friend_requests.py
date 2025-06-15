@@ -8,9 +8,6 @@ from Instagram.schemas import FriendRequestUpdate, FriendRequestCreate, FriendRe
 
 router = APIRouter(prefix="/friendrequests", tags=["friendrequests"])
 
-# Ensure tables are created (optional in production)
-#create_tables()
-
 @router.post("/friend-request")
 def send_friend_request(request: FriendRequestCreate, db: Session = Depends(get_db)):
     try:
@@ -27,7 +24,7 @@ def send_friend_request(request: FriendRequestCreate, db: Session = Depends(get_
                 db.delete(existing)
                 db.commit()
 
-        # ✅ Now create a new request
+        #  Now create a new request
         new_request = FriendRequest(
             sender_id=request.sender_id,
             receiver_id=request.receiver_id,
