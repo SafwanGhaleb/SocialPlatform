@@ -13,13 +13,13 @@ engine = create_engine(DATABASE_URL)
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
-# ✅ Session factory
+# Session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# ✅ Base class for models
+#  Base class for models
 # Base = declarative_base()
 
-# ✅ Dependency to get DB session
+#  Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:
