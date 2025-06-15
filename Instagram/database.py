@@ -12,17 +12,11 @@ engine = create_engine(DATABASE_URL)
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
-<<<<<<< HEAD
-# Session factory
-=======
 #  Session factory
->>>>>>> c0fbaec (Initial commit)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-#  Base class for models
 # Base = declarative_base()
 
-# git push origin main Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:

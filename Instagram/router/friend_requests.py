@@ -20,7 +20,9 @@ def send_friend_request(request: FriendRequestCreate, db: Session = Depends(get_
         if existing:
             if existing.status == FriendRequestStatus.pending:
                 raise HTTPException(status_code=400, detail="Friend request already sent")
-            elif existing.status in [FriendRequestStatus.accepted, FriendRequestStatus.rejected]:
+            elif existing.status == FriendRequestStatus.accepted:
+                raise HTTPException(status_code=400, detail="Friend request already accepted")
+            elif existing.status == FriendRequestStatus.rejected:
                 db.delete(existing)
                 db.commit()
 
