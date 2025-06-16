@@ -12,7 +12,7 @@ engine = create_engine(DATABASE_URL)
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
-#  Session factory
+#  Session factory in order to open a session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base = declarative_base()
