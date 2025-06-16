@@ -36,4 +36,3 @@ class UserLogin(BaseModel):
 class UserUpdate(BaseModel):
     username: str
     email: EmailStr
-

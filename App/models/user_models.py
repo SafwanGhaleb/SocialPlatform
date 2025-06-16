@@ -19,6 +19,8 @@ class User(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan")
+
 
 #  Friend request table
 class FriendRequest(Base):

@@ -6,7 +6,8 @@ from App.schemas.user_schemas import UserCreate, UserLogin
 from App.core.security import hash_password, verify_password
 from App.schemas.user_schemas import UserResponse
 from App.schemas.user_schemas import UserUpdate
-
+from fastapi.security import OAuth2PasswordRequestForm
+from App.core.security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -31,16 +32,22 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         return {"message": "User registered successfully", "user_id": new_user.id}
 
     except Exception as e:
+        print("Registration Error:", e)  # ✅ Log actual error in terminal
+        raise HTTPException(status_code=500, detail="Registration failed")
+
+    except Exception as e:
         print("❌ Registration error:", e)
         raise HTTPException(status_code=500, detail="Registration failed")
 
 
 @router.post("/login")
-def login_user(user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
+def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.username == form_data.username).first()
+    if not db_user or not verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful", "user_id": db_user.id}
+
+    access_token = create_access_token(data={"user_id": db_user.id})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/profile/{user_id}", response_model=UserResponse)
 def get_profile(user_id: int, db: Session = Depends(get_db)):

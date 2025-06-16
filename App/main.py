@@ -2,6 +2,8 @@ from fastapi import  FastAPI
 from App.router import friend_requests
 from App.router import auth
 from App.db.database import create_tables
+from App.router import wall
+from App.models.user_models import User
 
 
 import sys
@@ -16,5 +18,7 @@ def read_root():
 
 app.include_router(auth.router)
 app.include_router(friend_requests.router)
+app.include_router(wall.router)
+
 
 create_tables()
