@@ -9,6 +9,7 @@ from App.schemas.user_schemas import UserUpdate
 from fastapi.security import OAuth2PasswordRequestForm
 from App.core.security import create_access_token
 
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -46,8 +47,14 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     if not db_user or not verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    # ✅ Create access token
     access_token = create_access_token(data={"user_id": db_user.id})
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
 
 @router.get("/profile/{user_id}", response_model=UserResponse)
 def get_profile(user_id: int, db: Session = Depends(get_db)):

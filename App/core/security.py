@@ -5,7 +5,6 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from App.db.database import get_db
 from App.models import user_models
-from jose import jwt
 from datetime import datetime, timedelta
 from fastapi import Security
 
@@ -19,8 +18,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
+# oauth2_scheme = OAuth2PasswordBearer(
+#     tokenUrl="auth/login",
+# )
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")  # or your login path
+#oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")  #  your login path
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
@@ -48,8 +51,7 @@ def get_current_user(token: str = Security(oauth2_scheme), db: Session = Depends
 
 
 # You can adjust these values or load from env config
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
