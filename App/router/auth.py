@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from App.core.security import create_access_token
 
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth")
 
 
 @router.post("/register")

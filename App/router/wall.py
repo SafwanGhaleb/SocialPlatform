@@ -1,16 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from App import models
 from App.db.database import get_db
 from App.core.security import get_current_user
-from App.schemas.post import PostResponse, PostCreate
-from App.models.user_models import  User
+from App.models.user_models import User
 from App.models.post import Post
+from App.schemas.post import PostResponse, PostCreate
 from typing import List
 
-
-
-router = APIRouter(prefix="/wall", tags=["Wall"])
+router = APIRouter(prefix="/wall")
 
 @router.post("/", response_model=PostResponse)
 def create_post(
@@ -28,12 +25,12 @@ def create_post(
 @router.get("/my", response_model=List[PostResponse])
 def get_my_wall(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)  # ✅ this already uses oauth2_scheme
+    user: User = Depends(get_current_user)
 ):
     posts = (
-        db.query(models.Post)
-        .filter(models.Post.user_id == user.id)
-        .order_by(models.Post.created_at.desc())
+        db.query(Post)  # ✅ use the directly imported Post model
+        .filter(Post.user_id == user.id)
+        .order_by(Post.created_at.desc())
         .all()
     )
     return posts

@@ -7,7 +7,7 @@ from App.models.user_models import User
 from App.models.message import Message
 from App.schemas.message import MessageCreate, MessageResponse
 
-router = APIRouter(prefix="/chat", tags=["Simple Chat"])
+router = APIRouter(prefix="/chat")
 
 @router.post("/send", response_model=MessageResponse)
 def send_message(msg: MessageCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):

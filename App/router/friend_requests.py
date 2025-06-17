@@ -6,7 +6,7 @@ from App.db.database import get_db
 from App.models.user_models import FriendRequest, FriendRequestStatus
 from App.schemas.user_schemas import FriendRequestUpdate, FriendRequestCreate, FriendRequestAction
 
-router = APIRouter(prefix="/friendrequests", tags=["friendrequests"])
+router = APIRouter(prefix="/friendrequests")
 
 @router.post("/friend-request")
 def send_friend_request(request: FriendRequestCreate, db: Session = Depends(get_db)):
