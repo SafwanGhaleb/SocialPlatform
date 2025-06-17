@@ -4,6 +4,11 @@ from App.db.database import Base
 import enum
 from sqlalchemy import Column, Integer, String
 
+
+
+user_id = Column(Integer, ForeignKey("users.id"))
+
+
 #  Enum for request status
 class FriendRequestStatus(str, enum.Enum):
     pending  = "pending"
@@ -32,5 +37,10 @@ class FriendRequest(Base):
     receiver_id = Column(Integer, ForeignKey('users.id'))
     status = Column(SQLAEnum(FriendRequestStatus), default=FriendRequestStatus.pending)
 
-    sender = relationship('User', foreign_keys=[sender_id])
-    receiver = relationship('User', foreign_keys=[receiver_id])
+
+class Friendship(Base):
+    __tablename__ = 'friendships'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    friend_id = Column(Integer, ForeignKey('users.id'))
+    status = Column(String, default="pending")  # accepted, rejected
