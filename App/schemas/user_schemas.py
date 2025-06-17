@@ -12,7 +12,7 @@ class FriendRequestUpdate(BaseModel):
     action: FriendRequestAction
 
 class FriendRequestCreate(BaseModel):
-    sender_id: int
+    #sender_id: int
     receiver_id: int
 
 class UserCreate(BaseModel):

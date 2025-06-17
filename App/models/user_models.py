@@ -32,7 +32,7 @@ class FriendRequest(Base):
     __tablename__ = 'friend_requests'
     __table_args__ = (UniqueConstraint('sender_id', 'receiver_id', name='unique_friend_request'),)
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     sender_id = Column(Integer, ForeignKey('users.id'))
     receiver_id = Column(Integer, ForeignKey('users.id'))
     status = Column(SQLAEnum(FriendRequestStatus), default=FriendRequestStatus.pending)

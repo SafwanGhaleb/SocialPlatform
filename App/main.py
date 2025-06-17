@@ -28,7 +28,9 @@ app.include_router(feed.router, tags=["Feed"])
 app.include_router(group_post.router, tags=["Group Posts"])
 app.include_router(chat_db.router, tags=["Simple Chat"])
 
-# ✅ Inject security schema into OpenAPI docs
+
+
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema

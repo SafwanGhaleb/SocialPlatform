@@ -7,10 +7,17 @@ from App.models.user_models import User
 from App.models.message import Message
 from App.schemas.message import MessageCreate, MessageResponse
 
-router = APIRouter(prefix="/chat")
+router = APIRouter(
+    prefix="/chat",
+    tags=["Simple Chat"]  # ✅ Ensures it shows correctly in Swagger UI
+)
 
 @router.post("/send", response_model=MessageResponse)
-def send_message(msg: MessageCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def send_message(
+    msg: MessageCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
     message = Message(sender_id=user.id, receiver_id=msg.receiver_id, content=msg.content)
     db.add(message)
     db.commit()
@@ -18,7 +25,11 @@ def send_message(msg: MessageCreate, db: Session = Depends(get_db), user: User =
     return message
 
 @router.get("/history/{friend_id}", response_model=List[MessageResponse])
-def get_chat_history(friend_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def get_chat_history(
+    friend_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
     messages = db.query(Message).filter(
         ((Message.sender_id == user.id) & (Message.receiver_id == friend_id)) |
         ((Message.sender_id == friend_id) & (Message.receiver_id == user.id))
