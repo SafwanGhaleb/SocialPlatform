@@ -108,20 +108,33 @@ def update_friend_request(
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
 
-    # Proceed to update status and handle friendships
     if update.action == FriendRequestAction.accept:
+        print("🔁 Friend request accepted")
+
         friend_request.status = FriendRequestStatus.accepted
 
-        # Add to Friendship table both ways
-        if not db.query(Friendship).filter_by(user_id=friend_request.sender_id, friend_id=friend_request.receiver_id).first():
-            db.add(Friendship(user_id=friend_request.sender_id, friend_id=friend_request.receiver_id, status="accepted"))
-        if not db.query(Friendship).filter_by(user_id=friend_request.receiver_id, friend_id=friend_request.sender_id).first():
-            db.add(Friendship(user_id=friend_request.receiver_id, friend_id=friend_request.sender_id, status="accepted"))
+        if not db.query(Friendship).filter_by(user_id=friend_request.sender_id,
+                                              friend_id=friend_request.receiver_id).first():
+            print("➕ Creating friendship: sender -> receiver")
+            db.add(
+                Friendship(user_id=friend_request.sender_id, friend_id=friend_request.receiver_id, status="accepted"))
+        else:
+            print("ℹ️ Already exists: sender -> receiver")
+
+        if not db.query(Friendship).filter_by(user_id=friend_request.receiver_id,
+                                              friend_id=friend_request.sender_id).first():
+            print("➕ Creating friendship: receiver -> sender")
+            db.add(
+                Friendship(user_id=friend_request.receiver_id, friend_id=friend_request.sender_id, status="accepted"))
+        else:
+            print("ℹ️ Already exists: receiver -> sender")
 
     elif update.action == FriendRequestAction.reject:
+        print("❌ Friend request rejected")
         friend_request.status = FriendRequestStatus.rejected
 
     db.commit()
+    print("✅ Database committed")
     return {"message": f"Friend request {update.action}ed successfully"}
 
 

@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 Base = declarative_base()
-
+from App.models.user_models import Friendship, User
+from App.models.user_models import FriendRequest
 #DATABASE_URL = "mysql+mysqlconnector://root:Motopp2025@localhost/database_info"
 DATABASE_URL = "sqlite:///./socialconnect.db"
 
