@@ -10,3 +10,5 @@ After cloning the project, please follow these instructions:
 2. Run the server:
    
    python -m uvicorn App.main:app --reload
+
+Hello Team.
