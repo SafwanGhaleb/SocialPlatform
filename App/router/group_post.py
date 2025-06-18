@@ -2,15 +2,46 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from App.db.database import get_db
 from App.core.security import get_current_user
-from App.models.group_post import GroupMember
+from App.models.group_post import GroupMember, Group
 from App.models.user_models import User
 from App.models.group_post import GroupPost
+from typing import Optional
 
 router = APIRouter(
     prefix="/groups",
     tags=["Group Posts"]
 )
 
+
+
+@router.post("/groups/create")
+def create_group(
+    name: str,
+    description: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Check if group name exists
+    existing = db.query(Group).filter_by(name=name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Group name already taken")
+
+    # Create group
+    group = Group(name=name, description=description)
+    db.add(group)
+    db.commit()
+    db.refresh(group)
+
+    # Add creator as admin member
+    admin_member = GroupMember(group_id=group.id, user_id=current_user.id, is_admin=True)
+    db.add(admin_member)
+    db.commit()
+
+    return {
+        "message": "Group created",
+        "group_id": group.id,
+        "created_by": current_user.id
+    }
 
 @router.post("/groups/{group_id}/join")
 def join_group(group_id: int, user_id: int, db: Session = Depends(get_db)):
