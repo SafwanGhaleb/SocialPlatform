@@ -13,6 +13,7 @@ router = APIRouter(
 )
 
 
+# Creates a new group and sets the current user as the admin.
 
 @router.post("/groups/create")
 def create_group(
@@ -43,6 +44,32 @@ def create_group(
         "created_by": current_user.id
     }
 
+# Promotes a group member to admin — only current admins can do this.
+@router.post("/{group_id}/promote/{user_id}")
+def promote_to_admin(
+    group_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Check if current user is admin
+    admin = db.query(GroupMember).filter_by(
+        group_id=group_id, user_id=current_user.id, is_admin=True
+    ).first()
+    if not admin:
+        raise HTTPException(status_code=403, detail="You are not an admin")
+
+    # Check if the target user is a member
+    member = db.query(GroupMember).filter_by(group_id=group_id, user_id=user_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="User is not a member of the group")
+
+    # Promote to admin
+    member.is_admin = True
+    db.commit()
+    return {"message": f"User {user_id} promoted to admin"}
+
+# Adds a user to a group as a member (if not already joined).
 @router.post("/groups/{group_id}/join")
 def join_group(group_id: int, user_id: int, db: Session = Depends(get_db)):
     exists = db.query(GroupMember).filter_by(group_id=group_id, user_id=user_id).first()
@@ -53,6 +80,7 @@ def join_group(group_id: int, user_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Joined group"}
 
+# Posts content to a group by a group member.
 @router.post("/groups/{group_id}/post")
 def post_in_group(group_id: int, user_id: int, content: str, db: Session = Depends(get_db)):
     member = db.query(GroupMember).filter_by(group_id=group_id, user_id=user_id).first()
@@ -63,12 +91,14 @@ def post_in_group(group_id: int, user_id: int, content: str, db: Session = Depen
     db.commit()
     return {"message": "Post added"}
 
+# Retrieves all posts within a specific group.
 @router.get("/groups/{group_id}/posts")
 def get_group_posts(group_id: int, db: Session = Depends(get_db)):
     posts = db.query(GroupPost).filter_by(group_id=group_id).order_by(GroupPost.timestamp.desc()).all()
     return posts
 
-@router.delete("/{group_id}/kick/{user_id}")
+# Removes a user from a group — only admins are allowed.
+@router.delete("/{groups}/kick/{user_id}")
 def kick_member(
     group_id: int,
     user_id: int,
@@ -88,3 +118,5 @@ def kick_member(
     db.delete(target)
     db.commit()
     return {"message": "User removed"}
+
+

@@ -9,9 +9,10 @@ from App.schemas.message import MessageCreate, MessageResponse
 
 router = APIRouter(
     prefix="/chat",
-    tags=["Simple Chat"]  # ✅ Ensures it shows correctly in Swagger UI
+    tags=["Simple Chat"]
 )
 
+# Sends a chat message from the current user to another user and saves it in the database.
 @router.post("/send", response_model=MessageResponse)
 def send_message(
     msg: MessageCreate,
@@ -24,6 +25,7 @@ def send_message(
     db.refresh(message)
     return message
 
+# Retrieves all chat messages between the current user and the specified friend.
 @router.get("/history/{friend_id}", response_model=List[MessageResponse])
 def get_chat_history(
     friend_id: int,

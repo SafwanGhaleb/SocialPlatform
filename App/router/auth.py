@@ -10,8 +10,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from App.core.security import create_access_token
 
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth")
 
+# Registers a new user and stores their credentials securely in the database.
 
 @router.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -40,6 +41,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         print("❌ Registration error:", e)
         raise HTTPException(status_code=500, detail="Registration failed")
 
+# Authenticates a user and returns a JWT access token upon successful login.
 
 @router.post("/login")
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

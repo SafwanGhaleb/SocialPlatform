@@ -13,6 +13,7 @@ from App.schemas.user_schemas import FriendRequestCreate
 
 router = APIRouter(prefix="/friendrequests", tags=["Friend Requests"])
 
+# Sends a friend request from the current user to the specified receiver.
 @router.post("/friend-request")
 def send_friend_request(
     request: FriendRequestCreate,
@@ -53,7 +54,7 @@ def send_friend_request(
         "sender_id": sender_id
     }
 
-
+# Returns a list of the current user's confirmed friends.
 @router.get("/friends/{user_id}")
 def list_friends(user_id: int, db: Session = Depends(get_db)):
     """Get a list of friend IDs for a given user"""
@@ -71,12 +72,7 @@ def list_friends(user_id: int, db: Session = Depends(get_db)):
     ]
     return {"user_id": user_id, "friends": friend_ids}
 
-
-
-
-from fastapi import APIRouter
-
-
+# Accepts a pending friend request from another user.
 @router.put("/friend-request/{request_id}")
 def update_friend_request(
     request_id: int,
@@ -138,7 +134,9 @@ def update_friend_request(
     return {"message": f"Friend request {update.action}ed successfully"}
 
 
-
+# Cancels a pending friend request.
+# Only the sender or receiver of the request can cancel it, and only if it's still pending.
+# Raises 403 if unauthorized, 404 if not found, or 400 if already accepted/declined.
 @router.delete("/friend-request/{request_id}/cancel")
 def cancel_friend_request(
     request_id: int,
