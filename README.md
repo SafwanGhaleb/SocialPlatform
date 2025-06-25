@@ -49,7 +49,7 @@ SocialConnect/
 │   │   ├── web_chating.py
 │
 │   ├── static/
-│   │   └── chat.html              # ✅ No welcome_banner.png yet
+│   │   └── chat.html              
 │
 │   └── __init__.py
 │
