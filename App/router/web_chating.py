@@ -1,9 +1,11 @@
 from fastapi import WebSocket, WebSocketDisconnect, APIRouter, Depends
+from fastapi.responses import HTMLResponse  # ✅ ← must be above use
 from sqlalchemy.orm import Session
 from App.db.database import get_db
 from App.core.security import get_current_user_from_token
-from App.models.user_models import User
+from App.models.user_models import User, Friendship
 from App.models.message import Message
+from sqlalchemy import and_, or_
 from datetime import datetime
 from typing import Dict
 
@@ -23,15 +25,6 @@ Once connected, messages are exchanged and stored in the database.
 
 @router.websocket("/ws/chat/{receiver_id}")
 async def chat_websocket(websocket: WebSocket, receiver_id: int, db: Session = Depends(get_db)):
-    """
-    Real-time chat WebSocket.
-
-    ✅ Steps to test:
-    1. Open http://localhost:8000/static/chat.html in two browser tabs.
-    2. In Tab 1: enter token for user 1 and receiver_id = 2.
-    3. In Tab 2: enter token for user 2 and receiver_id = 1.
-    4. Press Connect in both and start chatting!
-    """
     try:
         token = websocket.query_params.get("token")
         if not token:
@@ -42,6 +35,22 @@ async def chat_websocket(websocket: WebSocket, receiver_id: int, db: Session = D
         user: User = get_current_user_from_token(token, db)
         if not user:
             print("❌ Invalid token or user not found")
+            await websocket.close(code=1008)
+            return
+
+        # ✅ Check if users are friends
+        is_friend = db.query(Friendship).filter(
+            and_(
+                or_(
+                    and_(Friendship.user_id == user.id, Friendship.friend_id == receiver_id),
+                    and_(Friendship.user_id == receiver_id, Friendship.friend_id == user.id)
+                ),
+                Friendship.status == "accepted"
+            )
+        ).first()
+
+        if not is_friend:
+            print(f"❌ Chat denied: users {user.id} and {receiver_id} are not friends.")
             await websocket.close(code=1008)
             return
 
@@ -72,27 +81,18 @@ async def chat_websocket(websocket: WebSocket, receiver_id: int, db: Session = D
         print(f"❗ WebSocket error: {e}")
         await websocket.close(code=1011)
 
-from fastapi import APIRouter
-from fastapi.responses import HTMLResponse
-
-router = APIRouter()
 
 @router.get("/chat-launcher", tags=["Simple Chat"], response_class=HTMLResponse)
 def launch_chat_ui():
-    """
-    🟢 Launch Dual-Tab Chat Testing UI
+    """💬 Simulate Real-Time Chat
 
-    Opens two separate browser tabs of the real-time WebSocket chat interface to simulate two users.
+    [🧪 Open Chat in New Tabs](http://localhost:8000/chat-launcher)
 
-    🧪 Use this for local testing with JWT tokens and receiver IDs.
-
-    👉 open manually: http://localhost:8000/static/chat.html
+    This opens two chat windows in your browser to simulate messaging between users.
     """
     return """
     <html>
-        <head>
-            <title>Launch Chat</title>
-        </head>
+        <head><title>Launch Chat</title></head>
         <body style="font-family: Arial; text-align: center; padding-top: 100px;">
             <h2>💬 Simulate Real-Time Chat</h2>
             <p>This will open two chat windows in separate tabs — to simulate user-to-user messaging.</p>
@@ -109,4 +109,3 @@ def launch_chat_ui():
         </body>
     </html>
     """
-

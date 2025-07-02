@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px; }
+        input, button { padding: 8px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>💬 WebSocket Chat</h2>
+
+    <div>
+        <label>JWT Token:</label><br>
+        <input type="text" id="token" placeholder="Paste your JWT token" size="80"><br>
+        <label>Receiver ID:</label><br>
+        <input type="number" id="receiverId" placeholder="Enter receiver user ID"><br>
+        <button onclick="connectWebSocket()">Connect</button>
+    </div>
+
+    <div id="chat" style="display: none;">
+        <div id="messages"></div>
+        <input type="text" id="messageText" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let socket;
+
+        function connectWebSocket() {
+            const token = document.getElementById("token").value.trim();
+            const receiverId = document.getElementById("receiverId").value.trim();
+            if (!token || !receiverId) {
+                alert("Token and receiver ID required");
+                return;
+            }
+
+            const wsUrl = `ws://${location.host}/ws/chat/${receiverId}?token=${token}`;
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => {
+                document.getElementById("chat").style.display = "block";
+                appendMessage("✅ Connected to chat.");
+            };
+
+            socket.onmessage = (event) => {
+                appendMessage("👤 " + event.data);
+            };
+
+            socket.onclose = () => {
+                appendMessage("❌ Disconnected.");
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+                alert("WebSocket connection failed.");
+            };
+        }
+
+        function sendMessage() {
+            const input = document.getElementById("messageText");
+            const text = input.value.trim();
+            if (text && socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(text);
+                appendMessage("🧑 You: " + text);
+                input.value = "";
+            }
+        }
+
+        function appendMessage(message) {
+            const div = document.createElement("div");
+            div.textContent = message;
+            document.getElementById("messages").appendChild(div);
+            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        }
+    </script>
+</body>
+</html>

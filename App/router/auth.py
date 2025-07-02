@@ -8,21 +8,23 @@ from App.schemas.user_schemas import UserResponse
 from App.schemas.user_schemas import UserUpdate
 from fastapi.security import OAuth2PasswordRequestForm
 from App.core.security import create_access_token
+from sqlalchemy.exc import IntegrityError
 
 
 router = APIRouter(prefix="/auth")
 
 # Registers a new user and stores their credentials securely in the database.
-
 @router.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    # Pre-checks — don't wrap in try
+    if db.query(User).filter(User.email == user.email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    if db.query(User).filter(User.username == user.username).first():
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    # Wrap only DB commit in try-except
     try:
-        if db.query(User).filter(User.email == user.email).first():
-            raise HTTPException(status_code=400, detail="Email already registered")
-
-        if db.query(User).filter(User.username == user.username).first():
-            raise HTTPException(status_code=400, detail="Username already taken")
-
         new_user = User(
             username=user.username,
             email=user.email,
@@ -33,12 +35,14 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         db.refresh(new_user)
         return {"message": "User registered successfully", "user_id": new_user.id}
 
-    except Exception as e:
-        print("Registration Error:", e)  # ✅ Log actual error in terminal
-        raise HTTPException(status_code=500, detail="Registration failed")
+    except IntegrityError as e:
+        db.rollback()
+        print("❌ IntegrityError:", e)
+        raise HTTPException(status_code=400, detail="Duplicate entry: Email or username already exists")
 
     except Exception as e:
-        print("❌ Registration error:", e)
+        db.rollback()
+        print("❌ Unexpected Registration Error:", type(e), e)
         raise HTTPException(status_code=500, detail="Registration failed")
 
 # Authenticates a user and returns a JWT access token upon successful login.

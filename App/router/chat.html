@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        #input { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Chat Room</h2>
+    <div id="messages"></div>
+    <div id="input">
+        <input type="text" id="messageText" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById("messages");
+
+        function sendMessage() {
+            const input = document.getElementById("messageText");
+            const text = input.value.trim();
+            if (text !== "") {
+                const msg = document.createElement("div");
+                msg.textContnt = "You: " + text;
+                messagesDiv.appendChild(msg);
+                input.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
