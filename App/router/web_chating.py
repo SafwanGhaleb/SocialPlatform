@@ -88,16 +88,15 @@ def launch_chat_ui():
 
     [🧪 Open Chat in New Tabs](http://localhost:8000/chat-launcher)
 
-    This opens two chat windows in your browser to simulate messaging between users.
-    """
+      Click the button twice to open two separate chat windows in different tabs — for simulating user-to-user messaging.    """
     return """
     <html>
         <head><title>Launch Chat</title></head>
         <body style="font-family: Arial; text-align: center; padding-top: 100px;">
             <h2>💬 Simulate Real-Time Chat</h2>
-            <p>This will open two chat windows in separate tabs — to simulate user-to-user messaging.</p>
+            <p>Click the button twice to open two separate chat windows in different tabs — for simulating user-to-user messaging.</p>
             <button id="launchBtn" style="padding: 12px 24px; font-size: 18px; cursor: pointer;">
-                🧪 Open Chat in Two Tabs
+                 Open Chat in Two Tabs
             </button>
 
             <script>
